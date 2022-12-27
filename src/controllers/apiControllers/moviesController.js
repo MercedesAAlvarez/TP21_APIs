@@ -7,13 +7,62 @@ const moment = require('moment');
 
 //Aqui tienen otra forma de llamar a cada uno de los modelos
 const Movies = db.Movie;
+const Genres = db.Genre;
+const Actors = db.Actor;
+
 
 
 
 const moviesController = {
   
     //Aqui dispongo las rutas para trabajar con el CRUD
-  
+    list: async (req, res) => {
+        try {
+          let movies = await db.Movie.findAll({
+            include: ["genre"],
+          });
+          //creo un objeto
+          let response = {
+            ok: true, 
+            meta: {
+              status: 200,
+              total: movies.length,
+            },
+            data: genres,
+          };
+          return res.status(200).json(response);
+        } catch (error) {}
+      },
+      detail: (req, res) => {
+        if (checkID(req.params.id)) {
+          return res.status(400).json(checkID(req.params.id));
+        }
+    
+        db.Movie.findByPk(req.params.id, {
+          include: ["genre"],
+        }).then((movie) => {
+          res.render("moviesDetail.ejs", { movie });
+        });
+      },
+      new: (req, res) => {
+        db.Movie.findAll({
+          order: [["release_date", "DESC"]],
+          limit: 5,
+        }).then((movies) => {
+          res.render("newestMovies", { movies });
+        });
+      },
+      recomended: (req, res) => {
+        db.Movie.findAll({
+          include: ["genre"],
+          where: {
+            rating: { [db.Sequelize.Op.gte]: 8 },
+          },
+          order: [["rating", "DESC"]],
+        }).then((movies) => {
+          res.render("recommendedMovies.ejs", { movies });
+        });
+      },
     create: function (req,res) {
         console.log(req.body)
         Movies.create(

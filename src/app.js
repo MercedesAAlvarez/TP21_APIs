@@ -31,9 +31,11 @@ app.use(methodOverride('_method'));
 app.use('/', indexRouter);
 app.use(moviesRoutes);
 app.use(genresRoutes);
+
+/* rutas APIs */
 app.use('/api',genresRoutesApi);
-app.use('/api',moviesRoutesApi);
-app.use('/api',actorsRoutesApi);
+app.use('/apiMovies',moviesRoutesApi);
+app.use('/apiActors',actorsRoutesApi);
 
 
 //Activando el servidor desde express
